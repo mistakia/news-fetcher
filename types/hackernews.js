@@ -1,6 +1,6 @@
 /* global require, module */
 
-var social = require('social');
+var social = require('../modules/social');
 var async = require('async');
 var Firebase = require('firebase');
 var api = new Firebase('https://hacker-news.firebaseio.com/v0');

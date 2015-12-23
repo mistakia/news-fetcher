@@ -1,4 +1,4 @@
-var request = require('domain-request');
+var request = require('../request');
 var async = require('async');
 
 var SocialScore = function(url, cb) {

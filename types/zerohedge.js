@@ -1,10 +1,10 @@
 /* global require, module */
 
-var social = require('social');
+var social = require('../modules/social');
 var async = require('async');
 var cheerio = require('cheerio');
 
-var request = require('domain-request');
+var request = require('../modules/request');
 
 module.exports = {
     re: /^(https?:\/\/)?(www\.)?zerohedge.com\/?$/i,

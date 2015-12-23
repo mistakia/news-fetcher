@@ -28,7 +28,7 @@ var fs = require('fs');
 var async = require('async');
 var URI = require('urijs');
 var path = require('path');
-var social = require('social');
+var social = require('./modules/social');
 var cheerio = require('cheerio');
 var merge = require('merge');
 var r = require('request').defaults({
@@ -37,7 +37,7 @@ var r = require('request').defaults({
     }
 });
 
-var request = require('domain-request');
+var request = require('./modules/request');
 
 var fetchers = [];
 
