@@ -126,7 +126,7 @@ module.exports = {
 		for (k in source.data.references.Post)
 		    posts.push(source.data.references.Post[k]);
 
-		async.mapLimit(posts, 2, this.buildPost.bind(this), function(err, results) {
+		async.mapSeries(posts, this.buildPost.bind(this), function(err, results) {
 		    source.posts = results;
 		    cb(err);
 		});

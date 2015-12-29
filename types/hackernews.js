@@ -61,7 +61,7 @@ module.exports = {
 			    return !!story;
 			});
 
-			async.mapLimit(stories, 2, self.buildPost.bind(self), function(err, posts) {
+			async.mapSeries(stories, self.buildPost.bind(self), function(err, posts) {
 			    source.posts = posts;
 			    cb();
 			});

@@ -114,7 +114,7 @@ module.exports = {
 		    return;
 		}
 
-		async.mapLimit(source.data.latestPosts, 2, this.buildPost.bind(this), function(err, results) {
+		async.mapSeries(source.data.latestPosts, this.buildPost.bind(this), function(err, results) {
 		    source.posts = results;
 		    cb(err);
 		});

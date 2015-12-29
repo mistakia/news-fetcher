@@ -112,7 +112,7 @@ module.exports = {
 			return;
 		    }
 
-		    async.mapLimit(body.data.children, 3, self.buildPost.bind(self), function(err, results) {
+		    async.mapSeries(body.data.children, self.buildPost.bind(self), function(err, results) {
 			source.posts = results;
 			cb(err);
 		    });

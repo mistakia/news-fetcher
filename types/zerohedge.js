@@ -79,7 +79,7 @@ module.exports = {
 
 		source.posts = posts;
 
-		async.eachLimit(source.posts, 2, this.buildPost.bind(this), function(err) {
+		async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
 		    cb(err);
 		});
 	    }

@@ -2,7 +2,7 @@ var request = require('../request');
 var async = require('async');
 
 var SocialScore = function(url, cb) {
-    async.parallelLimit({
+    async.parallel({
 	facebook: FacebookScore(url),
 	//twitter: TwitterScore(url),
 	reddit: RedditScore(url),
@@ -11,7 +11,7 @@ var SocialScore = function(url, cb) {
 	googleplus: GooglePlusScore(url),
 	pinterest: PinterestScore(url),
 	vkontakte: VKScore(url)
-    }, 3, function(err, result) {
+    }, function(err, result) {
 
 	var total = 0;
 	for (key in result) {
