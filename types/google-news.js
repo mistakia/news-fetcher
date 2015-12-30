@@ -39,7 +39,7 @@ module.exports = {
 		var self = this;
 
 		var query = querystring.parse(source.url)['https://www.google.com/search?q'];
-		var URL = 'http://www.google.com/search?hl=en&q=%s&start=0&sa=N&num=50&ie=UTF-8&oe=UTF-8&tbm=nws';
+		var URL = 'http://www.google.com/search?hl=en&q=%s&start=0&sa=N&num=25&ie=UTF-8&oe=UTF-8&tbm=nws';
 		var newURL = util.format(URL, query);
 
 		request({
