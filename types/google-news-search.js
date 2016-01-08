@@ -38,7 +38,7 @@ module.exports = {
 	    build: function(source, cb) {
 		var self = this;
 
-		var query = querystring.parse(source.url)['https://www.google.com/search?q'];
+		var query = querystring.parse(this.url)['https://www.google.com/search?q'];
 		var URL = 'http://www.google.com/search?hl=en&q=%s&start=0&sa=N&num=25&ie=UTF-8&oe=UTF-8&tbm=nws';
 		var newURL = util.format(URL, query);
 
