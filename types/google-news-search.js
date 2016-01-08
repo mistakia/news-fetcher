@@ -63,6 +63,7 @@ module.exports = {
 
 	    buildPost: function(article, cb) {
 		social.all(article.content_url, function(err, result) {
+		    article.score = result.total;
 		    article.social_score = result.total;
 		    cb(err);
 		});
@@ -80,7 +81,6 @@ module.exports = {
 
 		var $ = cheerio.load(source.html);
 		var links = [];
-		var length = $('li.g').length;
 
 		$('li.g').each(function(i, elem) {
 
@@ -94,9 +94,9 @@ module.exports = {
 		    links.push({
 			title: $(linkElem).first().text(),
 			content_url: qsObj['/url?q'],
-			score: length - i,
 			url: self.url
 		    });
+
 		}).get();
 
 		source.posts = links;
