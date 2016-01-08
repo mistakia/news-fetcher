@@ -130,6 +130,7 @@ var defaultFetcher = function(opts) {
 	},
 
 	buildPost: function(entry, cb) {
+	    var self = this;
 	    var queryURL = querystring.parse(entry.link)['url'];
 
 	    social.all(queryURL ? queryURL : entry.link, function(err, result) {
@@ -138,7 +139,7 @@ var defaultFetcher = function(opts) {
 		    content_url: queryURL,
 		    score: result.total,
 		    social_score: result.total,
-		    url: entry.link
+		    url: queryURL ? self.url : entry.link
 		});
 	    });
 	},
