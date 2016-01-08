@@ -16,7 +16,7 @@ module.exports = {
     init: function(opts) {
 	return {
 
-	    type: 'google news',
+	    type: 'google news search',
 
 	    getTitle: function(html) {
 		var $;

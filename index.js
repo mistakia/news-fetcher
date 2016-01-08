@@ -31,6 +31,7 @@ var path = require('path');
 var social = require('./modules/social');
 var cheerio = require('cheerio');
 var merge = require('merge');
+var querystring = require('querystring');
 var r = require('request').defaults({
     headers: {
 	'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36'
@@ -116,7 +117,7 @@ var defaultFetcher = function(opts) {
 		    return;
 		}
 
-		var re = /^(\s)?<\?xml version=("|')1\./i;
+		var re = /^(\s)?<(\?xml|rss) version=("|')(1|2)\./i;
 
 		source.isXML = re.test(body);
 		source.feed_url = source.isXML ? response.request.uri.href : self.discoverFeed(body, self.url);
@@ -129,10 +130,12 @@ var defaultFetcher = function(opts) {
 	},
 
 	buildPost: function(entry, cb) {
-	    social.all(entry.link, function(err, result) {
+	    var queryURL = querystring.parse(entry.link)['url'];
+
+	    social.all(queryURL ? queryURL : entry.link, function(err, result) {
 		cb(err, {
 		    title: entry.title,
-		    content_url: null,
+		    content_url: queryURL,
 		    score: result.total,
 		    social_score: result.total,
 		    url: entry.link
