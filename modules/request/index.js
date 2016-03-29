@@ -1,5 +1,3 @@
-var domain = require('domain');
-var cluster = require('cluster');
 var request = require('requestretry');
 
 request.Request.request.defaults({
@@ -13,17 +11,7 @@ var $ = function(opts, cb) {
     opts.maxAttempts = 4;
     opts.timeout = 30000;
 
-    var d = domain.create();
-
-    d.on('error', function(err) {
-	console.log(err);
-	cluster.worker.disconnect();
-    });
-
-    d.run(function() {
-	request(opts, cb);
-    });
-
+    request(opts, cb);
 };
 
 module.exports = $;
