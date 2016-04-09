@@ -1,4 +1,5 @@
 var request = require('requestretry');
+var domain = require('domain');
 
 request.Request.request.defaults({
     headers: {
@@ -7,11 +8,15 @@ request.Request.request.defaults({
 });
 
 var $ = function(opts, cb) {
-    opts.gzip = true;
-    opts.maxAttempts = 4;
-    opts.timeout = 30000;
+    var d = domain.create();
 
-    request(opts, cb);
+    d.on('error', function(err) {
+	cb(err);
+    });
+
+    d.run(function() {
+	request(opts, cb);
+    });
 };
 
 module.exports = $;
