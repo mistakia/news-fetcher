@@ -10,7 +10,8 @@ var SocialScore = function(url, cb) {
 	stumbleupon: StumbleUponScore(url),
 	googleplus: GooglePlusScore(url),
 	pinterest: PinterestScore(url),
-	vkontakte: VKScore(url)
+	vkontakte: VKScore(url),
+	buffer: BufferScore(url)
     }, function(err, result) {
 
 	var total = 0;
@@ -172,7 +173,28 @@ var VKScore = function(url) {
 	    cb(err, result);
 	});
     };
-};	    
+};
+
+var BufferScore = function(url) {
+    return function(cb) {
+	var bufferUrl = 'https://api.bufferapp.com/1/links/shares.json?url=' + encodeURIComponent(url);
+
+	request({
+	    url: bufferUrl,
+	    json: true
+	}, function(err, res, body) {
+	    var result = { shares: 0 };
+	    if (!err && res.statusCode === 200) {
+		try {
+		    result.shares = body.shares;
+		} catch(e) {
+		    console.log(e);
+		}
+	    }
+	    cb(err, result);
+	});
+    };
+};
 
 module.exports = {
     all: SocialScore
