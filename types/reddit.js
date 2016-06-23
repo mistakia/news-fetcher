@@ -73,7 +73,7 @@ module.exports = {
 		social.all(entry.data.url,  function(err, result) {
 		    cb(err, {
 			title: entry.data.title,
-			content_url: entry.data.url,
+			content_url: entry.data.url || "",
 			score: entry.data.score || 1,
 			social_score: result.total,
 			url: new URI(entry.data.permalink).absoluteTo(self.url).toString()

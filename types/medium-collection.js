@@ -104,7 +104,7 @@ module.exports = {
 		}, function(err, results) {
 		    cb(err, {
 			title: entry.title,
-			content_url: null,
+			content_url: "",
 			score: results.medium || 1,
 			social_score: results.social.total,
 			url: url

@@ -38,7 +38,7 @@ module.exports = {
 		social.all(post.url, function(err, result) {
 		    cb(err, {
 			title: post.title,
-			content_url: post.url,
+			content_url: post.url || "",
 			score: post.score || 1,
 			social_score: result.total,			    
 			url: 'https://news.ycombinator.com/item?id=' + post.id

@@ -69,7 +69,7 @@ module.exports = {
 
 		    return {
 			title: title,
-			content_url: null,
+			content_url: "",
 			score: looks,
 			url: a.attr('href')
 		    };

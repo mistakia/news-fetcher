@@ -71,7 +71,7 @@ module.exports = {
 
 		    return {
 			title: a.text(),
-			content_url: null,
+			content_url: "",
 			score: Math.round((comments || 0) + ((reads || 0) / 1000)),
 			url: a.attr('href')
 		    };

@@ -70,7 +70,7 @@ module.exports = {
 
 		    return {
 			title: title,
-			content_url: null,
+			content_url: "",
 			score: comments,
 			url: url.charAt(0) === '/' ? ('http://www.economist.com' + url) : url
 		    };

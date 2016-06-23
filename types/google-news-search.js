@@ -93,7 +93,7 @@ module.exports = {
 
 		    links.push({
 			title: $(linkElem).first().text(),
-			content_url: qsObj['/url?q'],
+			content_url: qsObj['/url?q'] || "",
 			url: self.url
 		    });
 
