@@ -32,6 +32,7 @@ var social = require('./modules/social');
 var cheerio = require('cheerio');
 var merge = require('merge');
 var querystring = require('querystring');
+var r = require('request');
 var request = require('./modules/request');
 
 var fetchers = [];
