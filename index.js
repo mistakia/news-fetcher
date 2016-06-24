@@ -131,7 +131,7 @@ var defaultFetcher = function(opts) {
 	    social.all(queryURL ? queryURL : entry.link, function(err, result) {
 		cb(err, {
 		    title: entry.title,
-		    content_url: queryURL,
+		    content_url: queryURL || "",
 		    score: result.total,
 		    social_score: result.total,
 		    url: queryURL ? self.url : entry.link
