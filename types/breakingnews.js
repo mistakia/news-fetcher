@@ -62,6 +62,7 @@ module.exports = {
 
 		source.data.objects.forEach(function(p) {
 		    if (!p.url) return;
+		    if (p.importance < 3) return;
 
 		    posts.push({
 			content_url: p.url,
