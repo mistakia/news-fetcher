@@ -7,81 +7,85 @@ var cheerio = require('cheerio');
 var request = require('../modules/request');
 
 module.exports = {
-    re: /^(https?:\/\/)?(www\.)?economist.com\/?$/i,
+  re: /^(https?:\/\/)?(www\.)?economist.com\/?$/i,
 
-    init: function(opts) {
-	return {
+  init: function(opts) {
+    return {
 
-	    type: 'economist',
+      type: 'economist',
 
-	    getLogo: function() {
-		return 'https://cdn.static-economist.com/sites/all/themes/econfinal/images/svg/logo.svg';
-	    },
+      getLogo: function() {
+	return 'https://cdn.static-economist.com/sites/all/themes/econfinal/images/svg/logo.svg';
+      },
 
-	    getTitle: function() {
-		return 'The Economist';
-	    },
+      getTitle: function() {
+	return 'The Economist';
+      },
 
-	    build: function(source, cb) {
-		var self = this;
+      build: function(source, cb) {
+	opts.log.debug('building source')
 
-		request({
-		    uri: this.url
-		}, function (error, response, body) {
+	var self = this;
 
-		    if (error) {
-			cb(error);
-			return;
-		    }
+	request({
+	  uri: this.url
+	}, function (error, response, body) {
 
-		    source.title = self.getTitle();
-		    source.logo_url = self.getLogo();
-		    source.html = body;
-		    source.feed_url = response.request.uri.href;
+	  if (error) {
+	    cb(error);
+	    return;
+	  }
 
-		    cb();
-		});
-	    },
+	  source.title = self.getTitle();
+	  source.logo_url = self.getLogo();
+	  source.html = body;
+	  source.feed_url = response.request.uri.href;
 
-	    buildPost: function(entry, cb) {
-		social.all(entry.url,  function(err, result) {
-		    entry.social_score = result.total;
-		    cb(err);
-		});
-	    },
+	  cb();
+	});
+      },
 
-	    getPosts: function(source, cb) {
-		source.posts = [];
-		
-		if (!source.html) {
-		    cb('missing data');
-		    return;
-		}
+      buildPost: function(entry, cb) {
+	opts.log.debug('building post:', entry.url)
 
-		var $ = cheerio.load(source.html);
+	social.all(entry.url,  function(err, result) {
+	  entry.social_score = result.total;
+	  cb(err);
+	});
+      },
 
-		var posts = $('#homepage-center-inner section article').map(function() {
-		    var a = $(this).find('a');
-		    var title = a.find('.headline').text();
-		    var comments = a.find('.comment-icon').text();
-		    console.log(comments);
-		    comments = parseInt(comments, 10) || 0;
-		    var url = a.attr('href');
+      getPosts: function(source, cb) {
+	source.posts = [];
 
-		    return {
-			title: title,
-			content_url: "",
-			score: comments,
-			url: url.charAt(0) === '/' ? ('http://www.economist.com' + url) : url
-		    };
-		}).get();
+	if (!source.html) {
+	  cb('missing data');
+	  return;
+	}
 
-		source.posts = posts;
+	var $ = cheerio.load(source.html);
 
-		async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
-		    cb(err);
-		});
-	    }
-	};
-    }
+	var posts = $('#homepage-center-inner section article').map(function() {
+	  var a = $(this).find('a');
+	  var title = a.find('.headline').text();
+	  var comments = a.find('.comment-icon').text();
+	  console.log(comments);
+	  comments = parseInt(comments, 10) || 0;
+	  var url = a.attr('href');
+
+	  return {
+	    title: title,
+	    content_url: "",
+	    score: comments,
+	    url: url.charAt(0) === '/' ? ('http://www.economist.com' + url) : url
+	  };
+	}).get();
+
+	source.posts = posts;
+
+	async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
+	  cb(err);
+	});
+      }
+    };
+  }
 };

@@ -11,101 +11,103 @@ var request = require('../modules/request');
 
 module.exports = {
 
-    re: /^(https?:\/\/)?(www\.)?google.com\/search\?q=[^&\s]+&tbm=nws$/i,
+  re: /^(https?:\/\/)?(www\.)?google.com\/search\?q=[^&\s]+&tbm=nws$/i,
 
-    init: function(opts) {
-	return {
+  init: function(opts) {
+    return {
 
-	    type: 'google news search',
+      type: 'google news search',
 
-	    getTitle: function(html) {
-		var $;
-		try {
-		    $ = cheerio.load(html);
-		} catch(e) {
-		    opts.log.error(e);
-		}
-		if (!$) return null;
+      getTitle: function(html) {
+	var $;
+	try {
+	  $ = cheerio.load(html);
+	} catch(e) {
+	  opts.log.error(e);
+	}
+	if (!$) return null;
 
-		var title = $('title');
-		return title.text() || null;
-	    },
+	var title = $('title');
+	return title.text() || null;
+      },
 
-	    getLogo: function(html) {
-		return 'http://www.google.com/favicon.ico';
-	    },
+      getLogo: function(html) {
+	return 'http://www.google.com/favicon.ico';
+      },
 
-	    build: function(source, cb) {
-		var self = this;
+      build: function(source, cb) {
+	opts.log.debug('building source')
+	var self = this;
 
-		var query = querystring.parse(this.url)['https://www.google.com/search?q'];
-		var URL = 'http://www.google.com/search?hl=en&q=%s&start=0&sa=N&num=25&ie=UTF-8&oe=UTF-8&tbm=nws';
-		var newURL = util.format(URL, query);
+	var query = querystring.parse(this.url)['https://www.google.com/search?q'];
+	var URL = 'http://www.google.com/search?hl=en&q=%s&start=0&sa=N&num=25&ie=UTF-8&oe=UTF-8&tbm=nws';
+	var newURL = util.format(URL, query);
 
-		request({
-		    uri: newURL
-		}, function(error, response, body) {
+	request({
+	  uri: newURL
+	}, function(error, response, body) {
 
-		    if (error) {
-			cb(error);
-			return;
-		    }
+	  if (error) {
+	    cb(error);
+	    return;
+	  }
 
-		    source.title = self.getTitle(body);
-		    source.logo_url = self.getLogo(body);
-		    source.html = body;
-		    source.feed_url = response.request.uri.href;
+	  source.title = self.getTitle(body);
+	  source.logo_url = self.getLogo(body);
+	  source.html = body;
+	  source.feed_url = response.request.uri.href;
 
-		    cb();
+	  cb();
 
-		});
-	    },
+	});
+      },
 
-	    buildPost: function(article, cb) {
-		social.all(article.content_url, function(err, result) {
-		    article.score = result.total;
-		    article.social_score = result.total;
-		    cb(err);
-		});
-	    },
+      buildPost: function(article, cb) {
+	opts.log.debug('building post:', article.content_url)
+	social.all(article.content_url, function(err, result) {
+	  article.score = result.total;
+	  article.social_score = result.total;
+	  cb(err);
+	});
+      },
 
-	    getPosts: function(source, cb) {
-		var self = this;
+      getPosts: function(source, cb) {
+	var self = this;
 
-		source.posts = [];
+	source.posts = [];
 
-		if (!source.html) {
-		    cb('missing html');
-		    return;
-		}
+	if (!source.html) {
+	  cb('missing html');
+	  return;
+	}
 
-		var $ = cheerio.load(source.html);
-		var links = [];
+	var $ = cheerio.load(source.html);
+	var links = [];
 
-		$('li.g').each(function(i, elem) {
+	$('li.g').each(function(i, elem) {
 
-		    var linkElem = $(elem).find('h3.r a');
+	  var linkElem = $(elem).find('h3.r a');
 
-		    if (!$(linkElem).first().text())
-			return;
+	  if (!$(linkElem).first().text())
+	    return;
 
-		    var qsObj = querystring.parse($(linkElem).attr('href'));
+	  var qsObj = querystring.parse($(linkElem).attr('href'));
 
-		    links.push({
-			title: $(linkElem).first().text(),
-			content_url: qsObj['/url?q'] || "",
-			url: self.url
-		    });
+	  links.push({
+	    title: $(linkElem).first().text(),
+	    content_url: qsObj['/url?q'] || "",
+	    url: self.url
+	  });
 
-		}).get();
+	}).get();
 
-		source.posts = links;
+	source.posts = links;
 
-		async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
-		    cb(err);
-		});
+	async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
+	  cb(err);
+	});
 
-	    }
-	};
-    }
+      }
+    };
+  }
 };

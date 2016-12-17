@@ -7,80 +7,82 @@ var cheerio = require('cheerio');
 var request = require('../modules/request');
 
 module.exports = {
-    re: /^(https?:\/\/)?(www\.)?illroots.com\/?$/i,
+  re: /^(https?:\/\/)?(www\.)?illroots.com\/?$/i,
 
-    init: function(opts) {
-	return {
+  init: function(opts) {
+    return {
 
-	    type: 'illroots',
+      type: 'illroots',
 
-	    getLogo: function() {
-		return 'http://illroots.com/uploads/sites/1/mobile_logo/1384527988/original.png';
-	    },
+      getLogo: function() {
+	return 'http://illroots.com/uploads/sites/1/mobile_logo/1384527988/original.png';
+      },
 
-	    getTitle: function() {
-		return 'Illroots';
-	    },
+      getTitle: function() {
+	return 'Illroots';
+      },
 
-	    build: function(source, cb) {
-		var self = this;
+      build: function(source, cb) {
+	opts.log.debug('building source')
+	var self = this;
 
-		request({
-		    uri: this.url
-		}, function (error, response, body) {
+	request({
+	  uri: this.url
+	}, function (error, response, body) {
 
-		    if (error) {
-			cb(error);
-			return;
-		    }
+	  if (error) {
+	    cb(error);
+	    return;
+	  }
 
-		    source.title = self.getTitle();
-		    source.logo_url = self.getLogo();
-		    source.html = body;
-		    source.feed_url = response.request.uri.href;
+	  source.title = self.getTitle();
+	  source.logo_url = self.getLogo();
+	  source.html = body;
+	  source.feed_url = response.request.uri.href;
 
-		    cb();
-		});
-	    },
+	  cb();
+	});
+      },
 
-	    buildPost: function(entry, cb) {
-		social.all(entry.url,  function(err, result) {
-		    entry.social_score = result.total;
-		    cb(err);
-		});
-	    },
+      buildPost: function(entry, cb) {
+	opts.log.debug('building post:', entry.url)
+	social.all(entry.url,  function(err, result) {
+	  entry.social_score = result.total;
+	  cb(err);
+	});
+      },
 
-	    getPosts: function(source, cb) {
-		source.posts = [];
-		
-		if (!source.html) {
-		    cb('missing data');
-		    return;
-		}
+      getPosts: function(source, cb) {
+	source.posts = [];
 
-		var $ = cheerio.load(source.html);
+	if (!source.html) {
+	  cb('missing data');
+	  return;
+	}
 
-		var posts = $('#home-posts-list .posts-list article:not(.ad-item)').map(function() {
-		    var a = $(this).find('header .title a');
-		    var title = a.text();
-		    var looks = $(this).find('.looks').text();
-		    looks = looks.replace('LOOKS', '').replace(',', '');
-		    looks = parseInt(looks, 10) || 0;
+	var $ = cheerio.load(source.html);
 
-		    return {
-			title: title,
-			content_url: "",
-			score: looks,
-			url: a.attr('href')
-		    };
-		}).get();
+	var posts = $('#home-posts-list .posts-list article:not(.ad-item)').map(function() {
+	  var a = $(this).find('header .title a');
+	  var title = a.text();
+	  var looks = $(this).find('.looks').text();
+	  looks = looks.replace('LOOKS', '').replace(',', '');
+	  looks = parseInt(looks, 10) || 0;
 
-		source.posts = posts;
+	  return {
+	    title: title,
+	    content_url: "",
+	    score: looks,
+	    url: a.attr('href')
+	  };
+	}).get();
 
-		async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
-		    cb(err);
-		});
-	    }
-	};
-    }
+	source.posts = posts;
+
+	async.eachSeries(source.posts, this.buildPost.bind(this), function(err) {
+	  cb(err);
+	});
+      }
+    };
+  }
 };
